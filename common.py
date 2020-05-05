@@ -14,6 +14,7 @@ def process_load(npyImage, objSettings):
 	print(tenDisparity.size())
 	deeplens = numpy.load('./images/deeplens.npy')
 	deeplens = torch.tensor(deeplens, dtype=torch.float32)
+	deeplens = torch.unsqueeze(torch.unsqueeze(deeplens, dim=0), dim=0)
 	print(deeplens.size())
 	
 	tenDepth = (objCommon['fltFocal'] * objCommon['fltBaseline']) / (tenDisparity + 0.0000001)
