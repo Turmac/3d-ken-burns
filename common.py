@@ -12,7 +12,7 @@ def process_load(npyImage, objSettings):
 	
 	# debug
 	print(type(tenDisparity))
-	deeplens = np.load('./images/deeplens.npy')
+	deeplens = numpy.load('./images/deeplens.npy')
 	print(type(deeplens))
 	
 	tenDepth = (objCommon['fltFocal'] * objCommon['fltBaseline']) / (tenDisparity + 0.0000001)
