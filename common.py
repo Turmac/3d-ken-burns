@@ -9,6 +9,11 @@ def process_load(npyImage, objSettings):
 	tenDisparity = disparity_adjustment(tenImage, tenDisparity)
 	tenDisparity = disparity_refinement(tenImage, tenDisparity)
 	tenDisparity = tenDisparity / tenDisparity.max() * objCommon['fltBaseline']
+	
+	# adjust disparity to lf dataset
+	alpha = 0.0
+	tenDisparity = alpha * tenDisparity
+	
 	tenDepth = (objCommon['fltFocal'] * objCommon['fltBaseline']) / (tenDisparity + 0.0000001)
 	tenValid = (spatial_filter(tenDisparity / tenDisparity.max(), 'laplacian').abs() < 0.03).float()
 	tenPoints = depth_to_points(tenDepth * tenValid, objCommon['fltFocal'])
