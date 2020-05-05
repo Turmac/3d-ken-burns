@@ -11,7 +11,7 @@ def process_load(npyImage, objSettings):
 	tenDisparity = tenDisparity / tenDisparity.max() * objCommon['fltBaseline']
 	
 	# adjust disparity to lf dataset
-	alpha = 0.0
+	alpha = 0.01
 	tenDisparity = alpha * tenDisparity
 	
 	tenDepth = (objCommon['fltFocal'] * objCommon['fltBaseline']) / (tenDisparity + 0.0000001)
