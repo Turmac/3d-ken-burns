@@ -148,7 +148,7 @@ def process_kenburns(objSettings):
 			
 			for vStep in [-1.0, 1.0]:
 				vFrom = 1.0 - vStep
-				vTo = 1.0 - vStep
+				vTo = 1.0 - vFrom
 				fltShiftV = ((vFrom * objSettings['objFrom']['fltCenterV']) + (vTo * objSettings['objTo']['fltCenterV'])) - (objCommon['intHeight'] / 2.0)
 				fltCropWidth = (fltFrom * objSettings['objFrom']['intCropWidth']) + (fltTo * objSettings['objTo']['intCropWidth'])
 				fltCropHeight = (fltFrom * objSettings['objFrom']['intCropHeight']) + (fltTo * objSettings['objTo']['intCropHeight'])
@@ -169,7 +169,7 @@ def process_kenburns(objSettings):
 	# end
 	for vStep in objSettings['fltSteps']:
 		vFrom = 1.0 - vStep
-		vTo = 1.0 - vStep
+		vTo = 1.0 - vFrom
 		fltShiftV = ((vFrom * objSettings['objFrom']['fltCenterV']) + (vTo * objSettings['objTo']['fltCenterV'])) - (objCommon['intHeight'] / 2.0)
 		for fltStep in objSettings['fltSteps']:
 			fltFrom = 1.0 - fltStep
