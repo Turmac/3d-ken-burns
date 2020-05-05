@@ -202,8 +202,8 @@ def process_kenburns(objSettings):
 			npyOutputs.append(npyOutput)
 	# end
 	
-	numpy.save('depth.npy', objectCommon['tensorRawDisparity'].detach().cpu().numpy())
-	numpy.save('inp_depth.npy', objectCommon['tensorInpaDepth'].detach().cpu().numpy())
+	numpy.save('depth.npy', objectCommon['tenRawDisparity'].detach().cpu().numpy())
+	numpy.save('inp_depth.npy', objectCommon['tenInpaDepth'].detach().cpu().numpy())
 
 	return npyOutputs
 # end
