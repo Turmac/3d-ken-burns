@@ -11,7 +11,9 @@ def process_load(npyImage, objSettings):
 	tenDisparity = tenDisparity / tenDisparity.max() * objCommon['fltBaseline']
 	
 	# debug
-	print(tenDisparity.size())
+	print(type(tenDisparity))
+	deeplens = np.load('./images/deeplens.npy')
+	print(type(deeplens))
 	
 	tenDepth = (objCommon['fltFocal'] * objCommon['fltBaseline']) / (tenDisparity + 0.0000001)
 	tenValid = (spatial_filter(tenDisparity / tenDisparity.max(), 'laplacian').abs() < 0.03).float()
