@@ -58,6 +58,8 @@ for strOption, strArgument in getopt.getopt(sys.argv[1:], '', [ strParameter[2:]
 	if strOption == '--out' and strArgument != '': arguments_strOut = strArgument # path to where the output should be stored
 # end
 
+param_shift = float(sys.argv[5])
+
 ##########################################################
 
 if __name__ == '__main__':
@@ -83,17 +85,19 @@ if __name__ == '__main__':
 	}
 
 	objTo = process_autozoom({
-		'fltShift': 100.0,
-		'fltZoom': 1.25,
+		'fltShift': param_shift,
+		'fltZoom': 1.0,
 		'objFrom': objFrom
 	})
 
 	npyResult = process_kenburns({
-		'fltSteps': numpy.linspace(0.0, 1.0, 75).tolist(),
+		'fltSteps': numpy.linspace(1.0, -1.0, 9).tolist(),
 		'objFrom': objFrom,
 		'objTo': objTo,
 		'boolInpaint': True
 	})
+	
+	numpy.save('np_result.npy', numpyResult)
 
-	moviepy.editor.ImageSequenceClip(sequence=[ npyFrame[:, :, ::-1] for npyFrame in npyResult + list(reversed(npyResult))[1:] ], fps=25).write_videofile(arguments_strOut)
+	#moviepy.editor.ImageSequenceClip(sequence=[ npyFrame[:, :, ::-1] for npyFrame in npyResult + list(reversed(npyResult))[1:] ], fps=25).write_videofile(arguments_strOut)
 # end
