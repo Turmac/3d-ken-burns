@@ -140,60 +140,70 @@ def process_kenburns(objSettings):
 		objCommon['tenInpaDepth'] = objCommon['tenRawDepth'].view(1, 1, -1)
 		objCommon['tenInpaPoints'] = objCommon['tenRawPoints'].view(1, 3, -1)
 
-		for fltStep in [ 0.0, 1.0 ]:
+		for fltStep in [ -1.0, 1.0 ]:
 			fltFrom = 1.0 - fltStep
 			fltTo = 1.0 - fltFrom
 
 			fltShiftU = ((fltFrom * objSettings['objFrom']['fltCenterU']) + (fltTo * objSettings['objTo']['fltCenterU'])) - (objCommon['intWidth'] / 2.0)
-			fltShiftV = ((fltFrom * objSettings['objFrom']['fltCenterV']) + (fltTo * objSettings['objTo']['fltCenterV'])) - (objCommon['intHeight'] / 2.0)
+			
+			for vStep in [-1.0, 1.0]:
+				vFrom = 1.0 - vStep
+				vTo = 1.0 - vStep
+				fltShiftV = ((vFrom * objSettings['objFrom']['fltCenterV']) + (vTo * objSettings['objTo']['fltCenterV'])) - (objCommon['intHeight'] / 2.0)
+				fltCropWidth = (fltFrom * objSettings['objFrom']['intCropWidth']) + (fltTo * objSettings['objTo']['intCropWidth'])
+				fltCropHeight = (fltFrom * objSettings['objFrom']['intCropHeight']) + (fltTo * objSettings['objTo']['intCropHeight'])
+
+				fltDepthFrom = objCommon['objDepthrange'][0]
+				fltDepthTo = objCommon['objDepthrange'][0] * (fltCropWidth / max(objSettings['objFrom']['intCropWidth'], objSettings['objTo']['intCropWidth']))
+
+				tenShift = process_shift({
+					'tenPoints': objCommon['tenInpaPoints'],
+					'fltShiftU': fltShiftU,
+					'fltShiftV': fltShiftV,
+					'fltDepthFrom': fltDepthFrom,
+					'fltDepthTo': fltDepthTo
+				})[1]
+
+				process_inpaint(1.1 * tenShift)
+		# end
+	# end
+	for vStep in objSettings['fltSteps']:
+		vFrom = 1.0 - vStep
+		vTo = 1.0 - vStep
+		fltShiftV = ((vFrom * objSettings['objFrom']['fltCenterV']) + (vTo * objSettings['objTo']['fltCenterV'])) - (objCommon['intHeight'] / 2.0)
+		for fltStep in objSettings['fltSteps']:
+			fltFrom = 1.0 - fltStep
+			fltTo = 1.0 - fltFrom
+
+			fltShiftU = ((fltFrom * objSettings['objFrom']['fltCenterU']) + (fltTo * objSettings['objTo']['fltCenterU'])) - (objCommon['intWidth'] / 2.0)
+			
 			fltCropWidth = (fltFrom * objSettings['objFrom']['intCropWidth']) + (fltTo * objSettings['objTo']['intCropWidth'])
 			fltCropHeight = (fltFrom * objSettings['objFrom']['intCropHeight']) + (fltTo * objSettings['objTo']['intCropHeight'])
 
 			fltDepthFrom = objCommon['objDepthrange'][0]
 			fltDepthTo = objCommon['objDepthrange'][0] * (fltCropWidth / max(objSettings['objFrom']['intCropWidth'], objSettings['objTo']['intCropWidth']))
 
-			tenShift = process_shift({
+			tenPoints = process_shift({
 				'tenPoints': objCommon['tenInpaPoints'],
 				'fltShiftU': fltShiftU,
 				'fltShiftV': fltShiftV,
 				'fltDepthFrom': fltDepthFrom,
 				'fltDepthTo': fltDepthTo
-			})[1]
+			})[0]
 
-			process_inpaint(1.1 * tenShift)
-		# end
+			tenRender, tenExisting = render_pointcloud(tenPoints, torch.cat([ objCommon['tenInpaImage'], objCommon['tenInpaDepth'] ], 1).view(1, 4, -1), objCommon['intWidth'], objCommon['intHeight'], objCommon['fltFocal'], objCommon['fltBaseline'])
+
+			tenRender = fill_disocclusion(tenRender, tenRender[:, 3:4, :, :] * (tenExisting > 0.0).float())
+
+			npyOutput = (tenRender[0, 0:3, :, :].detach().cpu().numpy().transpose(1, 2, 0) * 255.0).clip(0.0, 255.0).astype(numpy.uint8)
+			npyOutput = cv2.getRectSubPix(image=npyOutput, patchSize=(max(objSettings['objFrom']['intCropWidth'], objSettings['objTo']['intCropWidth']), max(objSettings['objFrom']['intCropHeight'], objSettings['objTo']['intCropHeight'])), center=(objCommon['intWidth'] / 2.0, objCommon['intHeight'] / 2.0))
+			npyOutput = cv2.resize(src=npyOutput, dsize=(objCommon['intWidth'], objCommon['intHeight']), fx=0.0, fy=0.0, interpolation=cv2.INTER_LINEAR)
+
+			npyOutputs.append(npyOutput)
 	# end
-
-	for fltStep in objSettings['fltSteps']:
-		fltFrom = 1.0 - fltStep
-		fltTo = 1.0 - fltFrom
-
-		fltShiftU = ((fltFrom * objSettings['objFrom']['fltCenterU']) + (fltTo * objSettings['objTo']['fltCenterU'])) - (objCommon['intWidth'] / 2.0)
-		fltShiftV = ((fltFrom * objSettings['objFrom']['fltCenterV']) + (fltTo * objSettings['objTo']['fltCenterV'])) - (objCommon['intHeight'] / 2.0)
-		fltCropWidth = (fltFrom * objSettings['objFrom']['intCropWidth']) + (fltTo * objSettings['objTo']['intCropWidth'])
-		fltCropHeight = (fltFrom * objSettings['objFrom']['intCropHeight']) + (fltTo * objSettings['objTo']['intCropHeight'])
-
-		fltDepthFrom = objCommon['objDepthrange'][0]
-		fltDepthTo = objCommon['objDepthrange'][0] * (fltCropWidth / max(objSettings['objFrom']['intCropWidth'], objSettings['objTo']['intCropWidth']))
-
-		tenPoints = process_shift({
-			'tenPoints': objCommon['tenInpaPoints'],
-			'fltShiftU': fltShiftU,
-			'fltShiftV': fltShiftV,
-			'fltDepthFrom': fltDepthFrom,
-			'fltDepthTo': fltDepthTo
-		})[0]
-
-		tenRender, tenExisting = render_pointcloud(tenPoints, torch.cat([ objCommon['tenInpaImage'], objCommon['tenInpaDepth'] ], 1).view(1, 4, -1), objCommon['intWidth'], objCommon['intHeight'], objCommon['fltFocal'], objCommon['fltBaseline'])
-
-		tenRender = fill_disocclusion(tenRender, tenRender[:, 3:4, :, :] * (tenExisting > 0.0).float())
-
-		npyOutput = (tenRender[0, 0:3, :, :].detach().cpu().numpy().transpose(1, 2, 0) * 255.0).clip(0.0, 255.0).astype(numpy.uint8)
-		npyOutput = cv2.getRectSubPix(image=npyOutput, patchSize=(max(objSettings['objFrom']['intCropWidth'], objSettings['objTo']['intCropWidth']), max(objSettings['objFrom']['intCropHeight'], objSettings['objTo']['intCropHeight'])), center=(objCommon['intWidth'] / 2.0, objCommon['intHeight'] / 2.0))
-		npyOutput = cv2.resize(src=npyOutput, dsize=(objCommon['intWidth'], objCommon['intHeight']), fx=0.0, fy=0.0, interpolation=cv2.INTER_LINEAR)
-
-		npyOutputs.append(npyOutput)
-	# end
+	
+	numpy.save('depth.npy', objectCommon['tensorRawDisparity'].detach().cpu().numpy())
+	numpy.save('inp_depth.npy', objectCommon['tensorInpaDepth'].detach().cpu().numpy())
 
 	return npyOutputs
 # end
