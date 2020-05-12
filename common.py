@@ -17,7 +17,7 @@ def process_load(npyImage, objSettings):
 	deeplens = Image.fromarray(deeplens)
 	deeplens = deeplens.resize((1024, 705))
 	deeplens = numpy.array(deeplens)
-	print(deeplens)
+	print(numpy.amax(deeplens), numpy.amin(deeplens))
 	deeplens = torch.tensor(deeplens, dtype=torch.float32)
 	deeplens = torch.unsqueeze(torch.unsqueeze(deeplens, dim=0), dim=0)
 	tenDisparity = deeplens.cuda()
