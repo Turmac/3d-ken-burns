@@ -11,9 +11,10 @@ def process_load(npyImage, objSettings):
 	tenDisparity = tenDisparity / tenDisparity.max() * objCommon['fltBaseline']
 	
 	# debug
-	#deeplens = numpy.load('./images/deeplens.npy')
+	deeplens = numpy.load('./images/deeplens.npy')
+	print(deeplens.shape)
 	from PIL import Image
-	deeplens = Image.open('./images/deeplens-2385.png', as_gray=True)
+	deeplens = Image.fromarray(deeplens)
 	deeplens = deeplens.resize((705, 1024))
 	deeplens = numpy.array(deeplens)
 	print(deeplens.shape)
