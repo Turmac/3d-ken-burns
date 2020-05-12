@@ -16,6 +16,7 @@ def process_load(npyImage, objSettings):
 	deeplens = Image.open('./images/deeplens-2385.png')
 	deeplens = deeplens.resize((705, 1024))
 	deeplens = numpy.array(deeplens)
+	deeplens = deeplens[:,:,:3]
 	deeplens = torch.tensor(deeplens, dtype=torch.float32)
 	deeplens = torch.unsqueeze(torch.unsqueeze(deeplens, dim=0), dim=0)
 	print(deeplens.size())
