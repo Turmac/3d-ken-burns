@@ -13,7 +13,7 @@ def process_load(npyImage, objSettings):
 	# debug
 	#deeplens = numpy.load('./images/deeplens.npy')
 	from PIL import Image
-	deeplens = Image.open('./images/deeplens.png')
+	deeplens = Image.open('./images/deeplens-2385.png')
 	deeplens = deeplens.resize((705, 1024))
 	deeplens = numpy.array(deeplens)
 	deeplens = torch.tensor(deeplens, dtype=torch.float32)
