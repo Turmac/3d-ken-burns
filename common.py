@@ -17,6 +17,7 @@ def process_load(npyImage, objSettings):
 	deeplens = Image.fromarray(deeplens)
 	deeplens = deeplens.resize((1024, 705))
 	deeplens = numpy.array(deeplens)
+	deeplens = deeplens + 0.1
 	print(numpy.amax(deeplens), numpy.amin(deeplens))
 	deeplens = torch.tensor(deeplens, dtype=torch.float32)
 	deeplens = torch.unsqueeze(torch.unsqueeze(deeplens, dim=0), dim=0)
