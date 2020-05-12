@@ -13,10 +13,10 @@ def process_load(npyImage, objSettings):
 	# debug
 	#deeplens = numpy.load('./images/deeplens.npy')
 	from PIL import Image
-	deeplens = Image.open('./images/deeplens-2385.png')
+	deeplens = Image.open('./images/deeplens-2385.png', as_gray=True)
 	deeplens = deeplens.resize((705, 1024))
 	deeplens = numpy.array(deeplens)
-	deeplens = deeplens[:,:,:3]
+	print(deeplens.shape)
 	deeplens = torch.tensor(deeplens, dtype=torch.float32)
 	deeplens = torch.unsqueeze(torch.unsqueeze(deeplens, dim=0), dim=0)
 	print(deeplens.size())
