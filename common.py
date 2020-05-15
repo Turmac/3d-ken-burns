@@ -3,7 +3,6 @@ def process_load(npyImage, objSettings):
 	objCommon['fltBaseline'] = 40.0
 	objCommon['intWidth'] = npyImage.shape[1]
 	objCommon['intHeight'] = npyImage.shape[0]
-	print(npyImage.shape)
 
 	tenImage = torch.FloatTensor(numpy.ascontiguousarray(npyImage.transpose(2, 0, 1)[None, :, :, :].astype(numpy.float32) * (1.0 / 255.0))).cuda()
 	tenDisparity = disparity_estimation(tenImage)
@@ -18,7 +17,7 @@ def process_load(npyImage, objSettings):
 		print(deeplens.shape)
 		from PIL import Image
 		deeplens = Image.fromarray(deeplens)
-		deeplens = deeplens.resize((1024, 704))
+		deeplens = deeplens.resize((1024, 705))
 		deeplens = numpy.array(deeplens)
 		deeplens = deeplens + 0.1
 		print(numpy.amax(deeplens), numpy.amin(deeplens))
