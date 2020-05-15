@@ -11,17 +11,19 @@ def process_load(npyImage, objSettings):
 	tenDisparity = tenDisparity / tenDisparity.max() * objCommon['fltBaseline']
 	
 	# debug
-	deeplens = numpy.load('./images/deeplens.npy')
-	print(deeplens.shape)
-	from PIL import Image
-	deeplens = Image.fromarray(deeplens)
-	deeplens = deeplens.resize((1024, 705))
-	deeplens = numpy.array(deeplens)
-	deeplens = deeplens + 0.1
-	print(numpy.amax(deeplens), numpy.amin(deeplens))
-	deeplens = torch.tensor(deeplens, dtype=torch.float32)
-	deeplens = torch.unsqueeze(torch.unsqueeze(deeplens, dim=0), dim=0)
-	tenDisparity = deeplens.cuda()
+	using_deeplens = False
+	if using_deeplens:
+		deeplens = numpy.load('./images/deeplens.npy')
+		print(deeplens.shape)
+		from PIL import Image
+		deeplens = Image.fromarray(deeplens)
+		deeplens = deeplens.resize((1024, 705))
+		deeplens = numpy.array(deeplens)
+		deeplens = deeplens + 0.1
+		print(numpy.amax(deeplens), numpy.amin(deeplens))
+		deeplens = torch.tensor(deeplens, dtype=torch.float32)
+		deeplens = torch.unsqueeze(torch.unsqueeze(deeplens, dim=0), dim=0)
+		tenDisparity = deeplens.cuda()
 	
 	tenDepth = (objCommon['fltFocal'] * objCommon['fltBaseline']) / (tenDisparity + 0.0000001)
 	tenValid = (spatial_filter(tenDisparity / tenDisparity.max(), 'laplacian').abs() < 0.03).float()
