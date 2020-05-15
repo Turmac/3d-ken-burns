@@ -18,7 +18,7 @@ def process_load(npyImage, objSettings):
 		print(deeplens.shape)
 		from PIL import Image
 		deeplens = Image.fromarray(deeplens)
-		deeplens = deeplens.resize((1024, 705))
+		deeplens = deeplens.resize((1024, 704))
 		deeplens = numpy.array(deeplens)
 		deeplens = deeplens + 0.1
 		print(numpy.amax(deeplens), numpy.amin(deeplens))
