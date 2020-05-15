@@ -3,6 +3,7 @@ def process_load(npyImage, objSettings):
 	objCommon['fltBaseline'] = 40.0
 	objCommon['intWidth'] = npyImage.shape[1]
 	objCommon['intHeight'] = npyImage.shape[0]
+	print(npyImage.shape)
 
 	tenImage = torch.FloatTensor(numpy.ascontiguousarray(npyImage.transpose(2, 0, 1)[None, :, :, :].astype(numpy.float32) * (1.0 / 255.0))).cuda()
 	tenDisparity = disparity_estimation(tenImage)
