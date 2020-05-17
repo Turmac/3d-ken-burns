@@ -91,7 +91,7 @@ if __name__ == '__main__':
 	})
 
 	npyResult = process_kenburns({
-		'fltSteps': numpy.linspace(1.0, -1.0, 9).tolist(),
+		'fltSteps': numpy.linspace(1.0, -1.0, 15).tolist(),
 		'objFrom': objFrom,
 		'objTo': objTo,
 		'boolInpaint': True
