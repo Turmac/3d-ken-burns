@@ -11,7 +11,7 @@ def process_load(npyImage, objSettings):
 	tenDisparity = tenDisparity / tenDisparity.max() * objCommon['fltBaseline']
 	
 	# debug
-	using_deeplens = False
+	using_deeplens = True
 	if using_deeplens:
 		deeplens = numpy.load('./images/deeplens.npy')
 		print(deeplens.shape)
